@@ -6,7 +6,7 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 18:11:47 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/15 18:14:49 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/16 17:56:17 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,17 @@
 #include <iostream>
 #include <iomanip>
 
-ScalarConverter::ScalarConverter()
-{
-	std::cout << "Default constructor called" << std::endl;
-}
+ScalarConverter::ScalarConverter() {}
 
 ScalarConverter::ScalarConverter(const ScalarConverter& src)
 {
-	(void)src;
-	std::cout << "Copy constructor called" << std::endl;
+	*this = src;
 }
 
-ScalarConverter::~ScalarConverter()
-{
-	std::cout << "Destructor called" << std::endl;
-}
+ScalarConverter::~ScalarConverter() {}
 
 ScalarConverter&	ScalarConverter::operator=(const ScalarConverter& src)
 {
-	std::cout << "Copy assignment operator called" << std::endl;
 	if (this != &src)	
 		*this = src;
 	return *this;
@@ -100,12 +92,28 @@ bool	isFloat(std::string str)
 	if (i == 1 + (str[0] == '+' || str[0] == '-'))
 		return false;
 	// check overflow
-	errno = 0;
-	float	f = std::strtof(str.c_str(), NULL);
-	(void)f;
-	if (errno == ERANGE)
+	// errno = 0;
+	// float	f = std::strtof(str.c_str(), NULL);
+	// (void)f;
+	// if (errno == ERANGE)
+	// 	return false;
+	// return true;
+	char*	endptr;
+	try
+	{
+		std::strtof(str.c_str(), &endptr);
+	}
+		catch (std::invalid_argument const& e)
+	{
+		std::cout << "invalild argument:" << e.what() << std::endl;
 		return false;
-	return true;
+	}
+	catch (std::out_of_range const& e)
+	{
+		std::cout << "out of range:" << e.what() << std::endl;
+		return false;
+	}
+	return (*endptr == 'f');
 }
 
 bool	isDouble(std::string str)
@@ -133,6 +141,7 @@ bool	isDouble(std::string str)
 	if (i == 1 + (str[0] == '+' || str[0] == '-'))
 		return false;
 	// check overflow
+	errno = 0;
 	double	d = std::strtod(str.c_str(), NULL);
 	(void)d;
 	if (errno == ERANGE)
@@ -170,18 +179,49 @@ void	convertInt(int num)
 	std::cout << "double: " << static_cast<double>(num) << std::endl;
 }
 
-// void	printFloat(std::string str)
-// {
-// 	float	res = 0.0f;
+void	convertFloat(std::string str)
+{
+	// char
+	std::cout << "char: impossible" << std::endl;
+	// int
+	std::cout << "int: impossible" << std::endl;
+	// float
+	errno = 0;
+	float	f = std::strtof(str.c_str(), NULL);
+	if (errno == ERANGE)
+		std::cout << "float: range error" << std::endl;
+	else
+		std::cout << "float: " << f << "f" << std::endl;
+	// double
+	errno = 0;
+	double	d = std::strtod(str.c_str(), NULL);
+	if (errno == ERANGE)
+		std::cout << "double: range error" << std::endl;
+	else
+		std::cout << "double: " << d << std::endl;
+}
 
-
-// }
-
-// void	printDouble(std::string str)
-// {
-// 	double	res = 0.0;
-
-// }
+void	convertDouble(std::string str)
+{
+	// char
+	std::cout << "char: impossible" << std::endl;
+	// int
+	std::cout << "int: impossible" << std::endl;
+	// float
+	errno = 0;
+	float	f = std::strtof(str.c_str(), NULL);
+	if (errno == ERANGE)
+		std::cout << "float: range error" << std::endl;
+	else
+		std::cout << "float: " << f << "f" << std::endl;
+	// double
+	errno = 0;
+	double	d = std::strtod(str.c_str(), NULL);
+	if (errno == ERANGE)
+		std::cout << "double: range error" << std::endl;
+	else
+		std::cout << "double: " << d << std::endl;
+}
 
 void	printNan(void)
 {
@@ -194,7 +234,7 @@ void	printNan(void)
 void	ScalarConverter::convert(std::string str)
 {
 	t_type	type = getType(str);
-	std::cout << "\e[31m" << type << std::endl;
+	std::cout << "\e[32m" << type << std::endl;
 	if (type == NONE)
 		std::cout << "char: impossible" << std::endl
 		<< "int: impossible" << std::endl
@@ -207,6 +247,10 @@ void	ScalarConverter::convert(std::string str)
 		int	num = atoi(str.c_str());
 		convertInt(num);
 	}
-	// else if (type == FLOAT || type == DOUBLE)
-
+	else if (type == FLOAT)
+		convertFloat(str);
+	else if (type == DOUBLE)
+		convertDouble(str);
+	else
+		std::cout << "invalid input for conversion" << std::endl;
 }

@@ -6,7 +6,7 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:18:58 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/15 18:02:39 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/16 16:59:23 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,5 @@ bool	isChar(std::string str);
 bool	isInt(std::string str);
 bool	isFloat(std::string str);
 bool	isDouble(std::string str);
-void	convertChar(std::string str);
 
 #endif
