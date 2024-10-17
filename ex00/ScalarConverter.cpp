@@ -6,7 +6,7 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 18:11:47 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/17 18:30:08 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/17 20:32:17 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,8 @@ bool	isChar(std::string str)
 
 bool	isInt(std::string str)
 {
-	size_t	i = 0;
-
 	// string format check
+	size_t	i = 0;
 	if (str[0] == '+' || str[0] == '-')
 		i = 1;
 	for (; i < str.size(); i++)
@@ -151,26 +150,31 @@ void	convertChar(char c)
 	// int
 	std::cout << "int: " << static_cast<int>(c) << std::endl;
 	// float
-	std::cout << "float: " << static_cast<float>(c) << "f" << std::endl;
+	std::cout << "float: " << static_cast<float>(c) << ".0f" << std::endl;
 	// double
-	std::cout << "double: " << static_cast<double>(c) << std::endl;
+	std::cout << "double: " << static_cast<double>(c) << ".0" << std::endl;
 }
 
-void	convertInt(int num)
+void	convertInt(int i)
 {
 	// char
-	if (!isascii(num))
+	if (!isascii(i))
 		std::cout << "char: impossible" << std::endl;
-	else if (!isprint(num))
+	else if (!isprint(i))
 		std::cout << "char: Non displayable" << std::endl;
 	else
-		std::cout << "char: '" << static_cast<char>(num) << "'" << std::endl;
+		std::cout << "char: '" << static_cast<char>(i) << "'" << std::endl;
 	// int
-	std::cout << "int: " << num << std::endl;
+	std::cout << "int: " << i << std::endl;
 	// float
-	std::cout << "float: " << static_cast<float>(num) << "f" << std::endl;
+	float	f = static_cast<int>(i);
+	int	f_i = static_cast<int>(f);
+	if (f_i != i)
+		std::cout << "float: impossible" << std::endl;
+	else
+		std::cout << "float: " << std::fixed << std::setprecision(1) << f << "f" << std::endl;
 	// double
-	std::cout << "double: " << static_cast<double>(num) << std::endl;
+	std::cout << "double: " << std::fixed << std::setprecision(1) << static_cast<double>(i) << std::endl;
 }
 
 void	convertFloat(std::string str)
@@ -178,11 +182,14 @@ void	convertFloat(std::string str)
 	if (str == "nanf" || str == "-inff" || str == "+inff")
 		return printPseudo(str), void();
 	float	f = std::strtof(str.c_str(), NULL);
+	int		p = countDecimalPlaces(f);
 	// char
 	char	c = static_cast<char>(f);
 	float	c_f = static_cast<float>(c);
 	if (c_f != f)
 		std::cout << "char: impossible" << std::endl;
+	else if (!isprint(static_cast<int>(c)))
+		std::cout << "char: Non displayable" << std::endl;
 	else
 		std::cout << "char: '" << c << "'" << std::endl;
 	// int
@@ -191,11 +198,11 @@ void	convertFloat(std::string str)
 	if (i_f != f)
 		std::cout << "int: impossible" << std::endl;
 	else
-		std::cout << "char: " << i << std::endl;
+		std::cout << "int: " << i << std::endl;
 	// float
-	std::cout << "float: " << f << "f" << std::endl;
+	std::cout << "float: " << std::fixed << std::fixed << std::setprecision(p) << f << "f" << std::endl;
 	// double
-	std::cout << "double: " << static_cast<double>(f) << std::endl;
+	std::cout << "double: " << std::fixed << std::fixed << std::setprecision(p) << static_cast<double>(f) << std::endl;
 }
 
 void	convertDouble(std::string str)
@@ -203,11 +210,14 @@ void	convertDouble(std::string str)
 	if (str == "nanf" || str == "-inff" || str == "+inff")
 		return printPseudo(str + "f"), void();
 	double	d = std::strtod(str.c_str(), NULL);
+	int		p;
 	// char
 	char	c = static_cast<char>(d);
 	double	c_d = static_cast<double>(c);
 	if (c_d != d)
 		std::cout << "char: impossible" << std::endl;
+	else if (!isprint(static_cast<int>(c)))
+		std::cout << "char: Non displayable" << std::endl;
 	else
 		std::cout << "char: '" << c << "'" << std::endl;
 	// int
@@ -216,26 +226,48 @@ void	convertDouble(std::string str)
 	if (i_d != d)
 		std::cout << "int: impossible" << std::endl;
 	else
-		std::cout << "char: " << i << std::endl;
+		std::cout << "int: " << i << std::endl;
 	// float
 	float	f = static_cast<float>(d);
-	double	f_d = static_cast<double>(f);
-	if (f_d != d)
-		std::cout << "float: impossible" << std::endl;
-	else
-		std::cout << "float: " << f << "f" << std::endl;
+	p = countDecimalPlaces(f);
+	std::cout << "float: " << std::fixed << std::setprecision(p) << f << "f" << std::endl;
 	// double
-	std::cout << "double: " << d << std::endl;
+	p = countDecimalPlaces(d);
+	std::cout << "double: " << std::fixed << std::setprecision(p) << d << std::endl;
 }
 
 void	printPseudo(std::string str)
 {
 	std::cout << "char: impossible" << std::endl;
-	std::cout<< "int: impossible" << std::endl;
+	std::cout << "int: impossible" << std::endl;
 	std::cout << "float: " << str << std::endl;
 	size_t	sz = str.size();
 	str.resize(sz - 1);
 	std::cout << "double: " << str << std::endl;
+}
+
+template <typename T>
+int	countDecimalPlaces(T number)
+{
+	T epsilon;
+	T int_part;
+	T frac_part;
+	int	decimal_places;
+	if (sizeof(T) == sizeof(float))
+		epsilon = 1e-7f;
+	else if (sizeof(T) == sizeof(double))
+		epsilon = 1e-15;
+	frac_part = std::modf(number, &int_part);
+	decimal_places = 0;
+	while (std::fabs(frac_part) > epsilon && decimal_places < 15)
+	{
+		number *= 10;
+		frac_part = std::modf(number, &int_part);
+		decimal_places++;
+	}
+	if (decimal_places == 0)
+		decimal_places = 1;
+	return decimal_places;
 }
 
 void	ScalarConverter::convert(std::string str)
@@ -256,10 +288,7 @@ void	ScalarConverter::convert(std::string str)
 	if (type == CHAR)
 		convertChar(str[0]);
 	else if (type == INT)
-	{
-		int	num = atoi(str.c_str());
-		convertInt(num);
-	}
+		convertInt(atoi(str.c_str()));
 	else if (type == FLOAT)
 		convertFloat(str);
 	else if (type == DOUBLE)

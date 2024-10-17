@@ -8,7 +8,7 @@ INCLUDE = ScalarConverter.hpp
 
 OBJ = $(SRC:.cpp=.o)
 
-NAME = ex00
+NAME = convert
 
 GREEN = \033[1;32m
 

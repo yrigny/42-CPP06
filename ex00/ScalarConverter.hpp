@@ -6,7 +6,7 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:18:58 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/17 18:04:08 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/17 20:33:23 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,9 +16,9 @@
 # include <iomanip>
 # include <cstdlib>
 # include <cerrno>
-# include <string>
 # include <climits>
-# include <cfloat>
+# include <cmath>
+# include <string>
 
 typedef enum
 {
@@ -48,6 +48,12 @@ bool	isChar(std::string str);
 bool	isInt(std::string str);
 bool	isFloat(std::string str);
 bool	isDouble(std::string str);
+void	convertChar(char c);
+void	convertInt(int i);
+void	convertFloat(std::string str);
+void	convertDouble(std::string str);
 void	printPseudo(std::string str);
+template <typename T>
+int		countDecimalPlaces(T number);
 
 #endif
