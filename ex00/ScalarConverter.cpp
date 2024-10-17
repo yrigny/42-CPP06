@@ -6,7 +6,7 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 18:11:47 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/16 17:56:17 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/17 18:30:08 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ bool	isInt(std::string str)
 {
 	size_t	i = 0;
 
+	// string format check
 	if (str[0] == '+' || str[0] == '-')
 		i = 1;
 	for (; i < str.size(); i++)
@@ -63,12 +64,18 @@ bool	isInt(std::string str)
 		else
 			return false;
 	}
-	long long	n = atoll(str.c_str());
+	// numeric value check
+	errno = 0;
+	char* endptr;
+	long long	n = strtoll(str.c_str(), &endptr, 10);
+	if (errno == ERANGE || *endptr != '\0')
+		return false;
 	return (n >= INT_MIN && n <= INT_MAX);
 }
 
 bool	isFloat(std::string str)
 {
+	//// string format check
 	if (str == "nanf" || str == "-inff" || str == "+inff")
 		return true;
 	size_t	i = 0;
@@ -91,33 +98,18 @@ bool	isFloat(std::string str)
 	// check if both integral and fractional parts are missing
 	if (i == 1 + (str[0] == '+' || str[0] == '-'))
 		return false;
-	// check overflow
-	// errno = 0;
-	// float	f = std::strtof(str.c_str(), NULL);
-	// (void)f;
-	// if (errno == ERANGE)
-	// 	return false;
-	// return true;
+	//// numeric value check
+	errno = 0;
 	char*	endptr;
-	try
-	{
-		std::strtof(str.c_str(), &endptr);
-	}
-		catch (std::invalid_argument const& e)
-	{
-		std::cout << "invalild argument:" << e.what() << std::endl;
+	std::strtof(str.c_str(), &endptr);
+	if (errno == ERANGE || *endptr != 'f' || *(endptr + 1) != '\0')
 		return false;
-	}
-	catch (std::out_of_range const& e)
-	{
-		std::cout << "out of range:" << e.what() << std::endl;
-		return false;
-	}
-	return (*endptr == 'f');
+	return true;
 }
 
 bool	isDouble(std::string str)
 {
+	//// string format check
 	if (str == "nan" || str == "-inf" || str == "+inf")
 		return true;
 	size_t	i = 0;
@@ -135,16 +127,16 @@ bool	isDouble(std::string str)
 			return false;
 	}
 	// has 1 point and terminated
-	if (!has_point || i != str.size())
+	if (!has_point || str[i] != '\0')
 		return false;
 	// check if both integral and fractional parts are missing
 	if (i == 1 + (str[0] == '+' || str[0] == '-'))
 		return false;
-	// check overflow
+	//// numeric value check
 	errno = 0;
-	double	d = std::strtod(str.c_str(), NULL);
-	(void)d;
-	if (errno == ERANGE)
+	char*	endptr;
+	std::strtod(str.c_str(), &endptr);
+	if (errno == ERANGE || *endptr != '\0')
 		return false;
 	return true;
 }
@@ -155,11 +147,11 @@ void	convertChar(char c)
 	if (isprint(static_cast<int>(c)))
 		std::cout << "char: '" << c << "'" << std::endl;
 	else
-		std::cerr << "char: Non displayable" << std::endl;
+		std::cout << "char: Non displayable" << std::endl;
 	// int
 	std::cout << "int: " << static_cast<int>(c) << std::endl;
 	// float
-	std::cout << "float: " << static_cast<float>(c) << std::endl;
+	std::cout << "float: " << static_cast<float>(c) << "f" << std::endl;
 	// double
 	std::cout << "double: " << static_cast<double>(c) << std::endl;
 }
@@ -167,80 +159,101 @@ void	convertChar(char c)
 void	convertInt(int num)
 {
 	// char
-	if (isprint(num))
-		std::cout << "char: '" << num << "'" << std::endl;
+	if (!isascii(num))
+		std::cout << "char: impossible" << std::endl;
+	else if (!isprint(num))
+		std::cout << "char: Non displayable" << std::endl;
 	else
-		std::cerr << "char: Non displayable" << std::endl;
+		std::cout << "char: '" << static_cast<char>(num) << "'" << std::endl;
 	// int
 	std::cout << "int: " << num << std::endl;
 	// float
-	std::cout << "float: " << static_cast<float>(num) << std::endl;
+	std::cout << "float: " << static_cast<float>(num) << "f" << std::endl;
 	// double
 	std::cout << "double: " << static_cast<double>(num) << std::endl;
 }
 
 void	convertFloat(std::string str)
 {
-	// char
-	std::cout << "char: impossible" << std::endl;
-	// int
-	std::cout << "int: impossible" << std::endl;
-	// float
-	errno = 0;
+	if (str == "nanf" || str == "-inff" || str == "+inff")
+		return printPseudo(str), void();
 	float	f = std::strtof(str.c_str(), NULL);
-	if (errno == ERANGE)
-		std::cout << "float: range error" << std::endl;
+	// char
+	char	c = static_cast<char>(f);
+	float	c_f = static_cast<float>(c);
+	if (c_f != f)
+		std::cout << "char: impossible" << std::endl;
 	else
-		std::cout << "float: " << f << "f" << std::endl;
+		std::cout << "char: '" << c << "'" << std::endl;
+	// int
+	int	i = static_cast<int>(f);
+	float	i_f = static_cast<float>(i);
+	if (i_f != f)
+		std::cout << "int: impossible" << std::endl;
+	else
+		std::cout << "char: " << i << std::endl;
+	// float
+	std::cout << "float: " << f << "f" << std::endl;
 	// double
-	errno = 0;
-	double	d = std::strtod(str.c_str(), NULL);
-	if (errno == ERANGE)
-		std::cout << "double: range error" << std::endl;
-	else
-		std::cout << "double: " << d << std::endl;
+	std::cout << "double: " << static_cast<double>(f) << std::endl;
 }
 
 void	convertDouble(std::string str)
 {
+	if (str == "nanf" || str == "-inff" || str == "+inff")
+		return printPseudo(str + "f"), void();
+	double	d = std::strtod(str.c_str(), NULL);
 	// char
-	std::cout << "char: impossible" << std::endl;
+	char	c = static_cast<char>(d);
+	double	c_d = static_cast<double>(c);
+	if (c_d != d)
+		std::cout << "char: impossible" << std::endl;
+	else
+		std::cout << "char: '" << c << "'" << std::endl;
 	// int
-	std::cout << "int: impossible" << std::endl;
+	int	i = static_cast<int>(d);
+	double	i_d = static_cast<double>(i);
+	if (i_d != d)
+		std::cout << "int: impossible" << std::endl;
+	else
+		std::cout << "char: " << i << std::endl;
 	// float
-	errno = 0;
-	float	f = std::strtof(str.c_str(), NULL);
-	if (errno == ERANGE)
-		std::cout << "float: range error" << std::endl;
+	float	f = static_cast<float>(d);
+	double	f_d = static_cast<double>(f);
+	if (f_d != d)
+		std::cout << "float: impossible" << std::endl;
 	else
 		std::cout << "float: " << f << "f" << std::endl;
 	// double
-	errno = 0;
-	double	d = std::strtod(str.c_str(), NULL);
-	if (errno == ERANGE)
-		std::cout << "double: range error" << std::endl;
-	else
-		std::cout << "double: " << d << std::endl;
+	std::cout << "double: " << d << std::endl;
 }
 
-void	printNan(void)
+void	printPseudo(std::string str)
 {
-	std::cout << "char: impossible" << std::endl
-	<< "int: impossible" << std::endl
-	<< "float: nanf" << std::endl
-	<< "double: nan" << std::endl;
+	std::cout << "char: impossible" << std::endl;
+	std::cout<< "int: impossible" << std::endl;
+	std::cout << "float: " << str << std::endl;
+	size_t	sz = str.size();
+	str.resize(sz - 1);
+	std::cout << "double: " << str << std::endl;
 }
 
 void	ScalarConverter::convert(std::string str)
 {
 	t_type	type = getType(str);
-	std::cout << "\e[32m" << type << std::endl;
+	std::string	type_arr[] = {"char", "int", "float", "double", "invalid input"};
+
+	std::cout << "\e[33m" << "type: " << type_arr[type] << "\e[0m" << std::endl;
+
 	if (type == NONE)
+	{
 		std::cout << "char: impossible" << std::endl
 		<< "int: impossible" << std::endl
 		<< "float: impossible" << std::endl
 		<< "double: impossible" << std::endl;
-	else if (type == CHAR)
+		return;
+	}
+	if (type == CHAR)
 		convertChar(str[0]);
 	else if (type == INT)
 	{
@@ -251,6 +264,4 @@ void	ScalarConverter::convert(std::string str)
 		convertFloat(str);
 	else if (type == DOUBLE)
 		convertDouble(str);
-	else
-		std::cout << "invalid input for conversion" << std::endl;
 }
