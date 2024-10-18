@@ -6,7 +6,7 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 18:11:47 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/17 20:32:17 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/18 20:56:08 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ t_type	getType(std::string str)
 
 bool	isChar(std::string str)
 {
-	return (str.length() <= 1 && isascii(str[0]) && !isdigit(str[0]));
+	return (str.size() <= 1 && isascii(str[0]) && !isdigit(str[0]));
 }
 
 bool	isInt(std::string str)

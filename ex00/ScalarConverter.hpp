@@ -6,19 +6,19 @@
 /*   By: yrigny <yrigny@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/10/10 17:18:58 by yrigny            #+#    #+#             */
-/*   Updated: 2024/10/17 20:33:23 by yrigny           ###   ########.fr       */
+/*   Updated: 2024/10/18 12:52:27 by yrigny           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef SCALAR_CONVERTER_HPP
 # define SCALAR_CONVERTER_HPP
 # include <iostream>
-# include <iomanip>
-# include <cstdlib>
+# include <iomanip> // for std::fixed, std::setprecision
+# include <cstdlib> // for std::is{ascii,print,digit}, std::strto{ll,f,d}
 # include <cerrno>
-# include <climits>
-# include <cmath>
-# include <string>
+# include <climits> // INT_MIN, INT_MAX
+# include <cmath> // for std::fabs, std::modf
+# include <string> // for std::{size,resize,c_str}
 
 typedef enum
 {

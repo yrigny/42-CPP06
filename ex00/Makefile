@@ -10,9 +10,9 @@ OBJ = $(SRC:.cpp=.o)
 
 NAME = convert
 
-GREEN = \033[1;32m
+GREEN = \e[1;32m
 
-NONE = \033[0m
+NONE = \e[0m
 
 all: $(NAME)
 
